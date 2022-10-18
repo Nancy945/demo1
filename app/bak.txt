@@ -1,0 +1,48 @@
+package com.example.demo1
+
+import android.util.Log
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.Around
+import org.aspectj.lang.annotation.Aspect
+
+/**
+ * Created by LanceWu on 2022/9/6
+ *
+ * 函数切面
+ */
+@Aspect
+class LibraryMethodAspect1 {
+
+    @Around("call(* com.example.demo1.MainActivity.testAs(..))")
+    fun around_TestLibrary_printLog(joinPoint: ProceedingJoinPoint): Any? {
+        Log.d("LibraryMethodAspect", "before printLog")
+        return aroundOldResult(joinPoint)
+    }
+
+    @Around("call(* android.widget.TextView.setText(..))")
+    fun around_set_text(joinPoint: ProceedingJoinPoint): Any? {
+        Log.d("LibraryMethodAspect", "before printLog")
+        return aroundSetText(joinPoint)
+    }
+
+    private fun aroundSetText(joinPoint: ProceedingJoinPoint): Any? {
+        try {
+            val args = joinPoint.args
+            args[0] = args[0].toString() + "setTexted"
+            return joinPoint.proceed(args).toString()
+
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+        }
+        return null
+    }
+
+    private fun aroundOldResult(joinPoint: ProceedingJoinPoint): Any? {
+        try {
+            return joinPoint.proceed(joinPoint.args)
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+        }
+        return null
+    }
+}
